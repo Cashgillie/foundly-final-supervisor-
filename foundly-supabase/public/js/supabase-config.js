@@ -10,5 +10,5 @@
    supabase/migrations/0001_init.sql, not from hiding this key.
    ============================================================ */
 
-export const SUPABASE_URL = "";
-export const SUPABASE_ANON_KEY = "";
+export const SUPABASE_URL = "https://gzxuavfihxljdbralulj.supabase.co";
+export const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd6eHVhdmZpaHhsamRicmFsdWxqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg2OTUyMDIsImV4cCI6MjEwNDI3MTIwMn0.jf9AmsThugaDsNCEEL9EDeYo7LTloNEMaaMvIe6XGfc";

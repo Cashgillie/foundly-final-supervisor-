@@ -20,6 +20,6 @@
    (a console warning is logged) — everything else keeps working.
    ============================================================ */
 
-export const EMAILJS_SERVICE_ID = "YOUR_EMAILJS_SERVICE_ID";
-export const EMAILJS_TEMPLATE_ID = "YOUR_EMAILJS_TEMPLATE_ID";
-export const EMAILJS_PUBLIC_KEY = "YOUR_EMAILJS_PUBLIC_KEY";
+export const EMAILJS_SERVICE_ID = "service_1a9r0jm";
+export const EMAILJS_TEMPLATE_ID = "template_1bdw16b";
+export const EMAILJS_PUBLIC_KEY = "GGsoD7lxOOzLXdB5c";
