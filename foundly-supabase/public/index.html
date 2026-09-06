@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GCTU Foundly · Lost & Found</title>
+  <link rel="icon" type="image/png" href="foundly-logo-2(preview).png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="foundly.css">
+  <style>
+    .about-section { margin: 64px 0; }
+    .about-section h2 { font-size: 32px; font-weight: 800; margin-bottom: 8px; }
+    .about-section > p { color: #6c757d; font-size: 17px; margin-bottom: 8px; }
+    .section-divider { border: none; border-top: 2px solid #e9ecef; margin: 56px 0; }
+
+    .safety-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; margin-top: 32px; }
+    .safety-tip {
+      background: white; border-radius: var(--radius-md); padding: 24px; box-shadow: var(--shadow-sm);
+      border-left: 4px solid var(--primary); display: flex; gap: 16px; align-items: flex-start; transition: var(--transition);
+    }
+    .safety-tip:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+    .safety-tip.highlight { border-left-color: #10b981; background: rgba(16,185,129,0.04); }
+    .safety-tip i { font-size: 22px; color: var(--primary); margin-top: 2px; }
+    .safety-tip.highlight i { color: #10b981; }
+    .safety-tip h4 { font-size: 15px; margin-bottom: 4px; }
+    .safety-tip p { font-size: 14px; color: var(--gray); line-height: 1.5; }
+
+    .faq-list { margin-top: 28px; }
+    .faq-item { border-bottom: 1px solid #e9ecef; }
+    .faq-question {
+      display: flex; justify-content: space-between; align-items: center; padding: 20px 4px;
+      cursor: pointer; font-weight: 600; font-size: 16px;
+    }
+    .faq-question i { color: var(--gray); transition: transform 0.2s; }
+    .faq-question.open i { transform: rotate(180deg); color: var(--primary); }
+    .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.25s ease; color: #6c757d; font-size: 15px; line-height: 1.6; padding: 0 4px; }
+    .faq-answer.open { max-height: 300px; padding-bottom: 20px; }
+
+    .contact-grid { display: grid; grid-template-columns: 1fr 1.4fr; gap: 40px; margin-top: 32px; }
+    .contact-info-item { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; font-size: 15px; color: var(--dark); }
+    .contact-info-item i { color: var(--primary); width: 20px; }
+    .contact-form { background: white; border-radius: var(--radius-md); padding: 32px; box-shadow: var(--shadow-sm); }
+    .contact-form h3, .contact-info h3 { margin-bottom: 20px; font-size: 18px; }
+    @media (max-width: 900px) { .contact-grid { grid-template-columns: 1fr; } }
+
+    .privacy-block h4 { margin-top: 20px; margin-bottom: 6px; font-size: 16px; }
+    .privacy-block p { color: #6c757d; font-size: 15px; line-height: 1.6; }
+
+    .form-tip {
+      display: flex; gap: 10px; align-items: flex-start; background: rgba(0,7,255,0.05);
+      border: 1px solid rgba(0,7,255,0.12); border-radius: var(--radius-sm); padding: 12px 14px;
+      font-size: 13px; color: var(--dark); margin-top: -6px; margin-bottom: 18px; line-height: 1.5;
+    }
+    .form-tip i { color: var(--primary); margin-top: 2px; }
+  </style>
+</head>
+<body data-page="home">
+<div class="container">
+
+  <!-- NAVIGATION -->
+  <nav class="navbar">
+    <a href="#" class="logo">
+      <img id="foundly-logo-top" src="GCTU-Logo-640x640.webp" alt="Foundly illustration" onerror="this.style.display='none'">
+      <img id="foundly-logo-top" src="foundly-logo-2(preview).png" alt="Foundly illustration" onerror="this.style.display='none'">
+      <span> GCTU Foundly</span>
+    </a>
+    <!-- <div class="nav-links">
+      <a href="#items-section">Browse Items</a>
+      <a href="#how-it-works">How it Works</a>
+      <a href="#safety">Safety</a>
+      <a href="#faq">FAQ</a>
+      <a href="#contact">Contact</a>
+    </div> -->
+    <div class="nav-buttons">
+      <button class="btn btn-outline" onclick="openReportModal('lost')">
+        <i class="fas fa-plus-circle"></i> Report Lost
+      </button>
+      <!-- <button class="btn btn-primary" onclick="openReportModal('found')">
+        <i class="fas fa-search"></i> Report Found
+      </button> -->
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Lost something?<br>We'll help you find it.</h1>
+      <p>Join thousands of people who've reunited with their belongings through Foundly. It's free, fast, and easy.</p>
+      <div class="hero-buttons">
+        <button class="btn" onclick="openReportModal('lost')">
+          <i class="fas fa-frown"></i> I Lost Something
+        </button>
+        <!-- <button class="btn btn-outline-white" onclick="openReportModal('found')">
+          <i class="fas fa-smile"></i> I Found Something
+        </button> -->
+      </div>
+      <!-- <div class="hero-stats">
+        <div class="stat-item">
+          <span class="stat-number" id="statReturned">2,845+</span>
+          <span class="stat-label">Items Returned</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number" id="statActive">—</span>
+          <span class="stat-label">Active Items</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">98%</span>
+          <span class="stat-label">Happy Users</span>
+        </div>
+      </div> -->
+    </div>
+    <div class="hero-image">
+      <img src="foundly-logo-2(preview).png" alt="Foundly illustration" onerror="this.style.display='none'">
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="how-it-works" id="how-it-works">
+    <h2>How Foundly Works</h2>
+    <p>Three simple steps to reunite lost items with their owners, no account required.</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-icon"><i class="fas fa-clipboard-list"></i></div>
+        <h3>1. Report an item</h3>
+        <p>Tell us what you lost. Add details, location, and a photo to help identify it.
+
+        </p>
+      </div>
+      <div class="step">
+        <div class="step-icon"><i class="fas fa-sync-alt"></i></div>
+        <h3>2. Browse & Search</h3>
+        <p>Use search and filters to scan reports from your area. New items are posted daily.</p>
+      </div>
+      <div class="step">
+        <div class="step-icon"><i class="fas fa-handshake"></i></div>
+        <h3>3. Retrieve</h3>
+        <p>Visit the Lost & Found Department for handover.</p>
+      </div>
+    </div>
+    
+  </section>
+
+  <div class="found-items-instruction">
+    <p style="color:black;font-size:16px;margin-top:-16px;margin:24px">
+    <i class="fa-solid fa-circle-exclamation" style="color:var(--primary);margin-right:6px;font-size:24px"></i>
+Found items should be submitted to the Lost & Found Department. The department will upload found items to the website to make identification and collection easier for the rightful owners.  </p>
+  </div>
+
+  <!-- SEARCH & FILTER
+  <div class="search-section" id="items-section">
+    <div class="search-input">
+      <i class="fas fa-search"></i>
+      <input type="text" placeholder="Search for lost or found items..." id="searchInput">
+    </div>
+    <div class="filter-dropdown">
+      <label for="drpdwn">Category:</label>
+      <select id="drpdwn">
+        <option value="">All</option>
+        <option value="electronics">Electronics</option>
+        <option value="id">ID</option>
+        <option value="bags">Bags & Luggage</option>
+        <option value="keys">Keys</option>
+        <option value="phones">Phones</option>
+        <option value="wallets">Wallets & Purses</option>
+        <option value="jewelry">Jewelry</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+    <button class="search-btn" onclick="applyFilters()">
+       Search
+    </button>
+  </div>
+
+  CATEGORY PILLS 
+  <div class="category-pills">
+    <div class="pill active" onclick="filterByCategory('all', this)"><i class="fas fa-border-all"></i> All Items</div>
+    <div class="pill" onclick="filterByCategory('electronics', this)"><i class="fas fa-laptop"></i> Electronics</div>
+    <div class="pill" onclick="filterByCategory('id', this)"><i class="fas fa-id-card"></i> ID</div>
+    <div class="pill" onclick="filterByCategory('bags', this)"><i class="fas fa-bag-shopping"></i> Bags</div>
+    <div class="pill" onclick="filterByCategory('keys', this)"><i class="fas fa-key"></i> Keys</div>
+    <div class="pill" onclick="filterByCategory('phones', this)"><i class="fas fa-mobile-alt"></i> Phones</div>
+    <div class="pill" onclick="filterByCategory('wallets', this)"><i class="fas fa-wallet"></i> Wallets</div>
+    <div class="pill" onclick="filterByCategory('jewelry', this)"><i class="fas fa-gem"></i> Jewelry</div>
+    <div class="pill" onclick="filterByCategory('other', this)"><i class="fas fa-tag"></i> Other</div>
+  </div> -->
+
+  <hr class="section-divider">
+
+  <!-- ITEMS GRID -->
+  <div class="section-header">
+    <h2>Recently Found Items</h2>
+    <button class="btn" id="view-all-btn">
+      <a onclick="showAllItems()" style="cursor:pointer">View all <i class="fas fa-arrow-right"></i></a>
+    </button>
+  </div>
+  <p style="color:var(--gray);font-size:16px;margin-top:-16px;margin-bottom:24px">
+    <i class="fas fa-shield-halved" style="color:var(--primary);margin-right:6px"></i>
+    Lost-item reports aren't shown publicly, to protect owners from false ownership claims. If you've lost something, report it below and check back here for a match.
+  </p>
+
+  <!-- SEARCH & FILTER -->
+  <div class="search-section" id="items-section">
+    <div class="search-input">
+      <i class="fas fa-search"></i>
+      <input type="text" placeholder="Search for lost or found items..." id="searchInput">
+    </div>
+    <div class="filter-dropdown">
+      <label for="drpdwn">Category:</label>
+      <select id="drpdwn">
+        <option value="">All</option>
+        <option value="electronics">Electronics</option>
+        <option value="id">ID</option>
+        <option value="bags">Bags & Luggage</option>
+        <option value="keys">Keys</option>
+        <option value="phones">Phones</option>
+        <option value="wallets">Wallets & Purses</option>
+        <option value="jewelry">Jewelry</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+    <button class="search-btn" onclick="applyFilters()">
+       Search
+    </button>
+  </div>
+
+  <!-- CATEGORY PILLS -->
+  <div class="category-pills">
+    <div class="pill active" onclick="filterByCategory('all', this)"><i class="fas fa-border-all"></i> All Items</div>
+    <div class="pill" onclick="filterByCategory('electronics', this)"><i class="fas fa-laptop"></i> Electronics</div>
+    <div class="pill" onclick="filterByCategory('id', this)"><i class="fas fa-id-card"></i> ID</div>
+    <div class="pill" onclick="filterByCategory('bags', this)"><i class="fas fa-bag-shopping"></i> Bags</div>
+    <div class="pill" onclick="filterByCategory('keys', this)"><i class="fas fa-key"></i> Keys</div>
+    <div class="pill" onclick="filterByCategory('phones', this)"><i class="fas fa-mobile-alt"></i> Phones</div>
+    <div class="pill" onclick="filterByCategory('wallets', this)"><i class="fas fa-wallet"></i> Wallets</div>
+    <div class="pill" onclick="filterByCategory('jewelry', this)"><i class="fas fa-gem"></i> Jewelry</div>
+    <div class="pill" onclick="filterByCategory('other', this)"><i class="fas fa-tag"></i> Other</div>
+  </div>
+
+  <div class="items-grid" id="itemsGrid"></div>
+
+  <hr class="section-divider">
+
+  <!-- SAFETY TIPS -->
+  <section class="about-section" id="safety">
+    <h2>Safety Tips</h2>
+    <!-- <p>Stay safe when arranging a handover — and help prevent false ownership claims.</p> -->
+    <div class="safety-grid">
+      <div class="safety-tip highlight">
+        <i class="fas fa-user-check"></i>
+        <div>
+          <h4>Leave out identifying features</h4>
+          <p>If you found an item, don't describe every detail in your post. Leave out one identifying feature - a real owner will know it.</p>
+        </div>
+      </div>
+      <!-- <div class="safety-tip">
+        <i class="fas fa-people-group"></i>
+        <div>
+          <h4>Meet in a public place</h4>
+          <p>Choose a busy location like a café, mall, or police station for the handover.</p>
+        </div>
+      </div> -->
+      <!-- <div class="safety-tip">
+        <i class="fas fa-sun"></i>
+        <div>
+          <h4>Meet during daylight</h4>
+          <p>Arrange meetings during daytime hours when there are more people around.</p>
+        </div>
+      </div> -->
+      <!-- <div class="safety-tip">
+        <i class="fas fa-phone"></i>
+        <div>
+          <h4>Tell someone</h4>
+          <p>Let a friend or family member know where you're going and who you're meeting.</p>
+        </div>
+      </div> -->
+      <div class="safety-tip">
+        <i class="fas fa-ban"></i>
+        <div>
+          <h4>Never share sensitive info</h4>
+          <p>Don't share your home address, financial info, or ID.</p>
+        </div>
+      </div>
+      <div class="safety-tip">
+        <i class="fas fa-flag"></i>
+        <div>
+          <h4>Report suspicious activity</h4>
+          <p>If something feels off, don't proceed. Report suspicious listings to us immediately.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- FAQ -->
+  <section class="about-section" id="faq">
+    <h2>Frequently Asked Questions</h2>
+    <p>Everything you need to know about using Foundly.</p>
+    <div class="faq-list" id="faqList"><!-- rendered by JS --></div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- CONTACT -->
+  <section class="about-section" id="contact">
+    <h2>Contact Us</h2>
+    <p>Have a question, suggestion, or need help? We'd love to hear from you.</p>
+    <div class="contact-grid">
+      <div class="contact-info">
+        <h3>Get in touch</h3>
+        <div class="contact-info-item"><i class="fas fa-envelope"></i><span>foundlyapp@gmail.com</span></div>
+        <div class="contact-info-item"><i class="fas fa-phone"></i><span>+233 24 529 4652</span></div>
+        <div class="contact-info-item"><i class="fas fa-map-marker-alt"></i><span>GCTU, Tesano, GA</span></div>
+        <div class="contact-info-item"><i class="fas fa-clock"></i><span>Mon–Fri, 9am–6pm GMT</span></div>
+      </div>
+      <!-- <div class="contact-form">
+        <h3>Send us a message</h3>
+        <form onsubmit="submitContact(event)">
+          <div class="form-group">
+            <label>Your Name</label>
+            <input type="text" placeholder="John Doe" required>
+          </div>
+          <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" placeholder="you@example.com" required>
+          </div>
+          <div class="form-group">
+            <label>Subject</label>
+            <input type="text" placeholder="How can we help?">
+          </div>
+          <div class="form-group">
+            <label>Message</label>
+            <textarea rows="5" placeholder="Tell us more..." required style="resize:vertical"></textarea>
+          </div>
+          <button type="submit" class="submit-btn">
+            <i class="fas fa-paper-plane"></i> Send Message
+          </button>
+        </form>
+      </div> -->
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- PRIVACY -->
+  <section class="about-section" id="privacy">
+    <h2>Privacy Policy</h2>
+    <p>We take your privacy seriously. Here's the short version.</p>
+    <div class="privacy-block">
+      <h4>What we collect</h4>
+      <p>When you report an item, we store the details you provide: item description, location, and contact email. We do not collect names, addresses, or payment information.</p>
+      <h4>How we use your data</h4>
+      <p>Your data is used solely to display listings and facilitate contact between finders and owners. We do not sell, rent, or share your data with third parties for marketing purposes.</p>
+      <h4>Photos</h4>
+      <p>Photos uploaded are stored to help identify items and are displayed publicly alongside the listing. You can request removal at any time by contacting us.</p>
+      <h4>Your rights</h4>
+      <p>You may request deletion of any listing or personal data at any time by emailing hello@foundly.app. We will process all requests within 48 hours.</p>
+    </div>
+  </section>
+
+  <!-- REPORT MODAL -->
+  <div class="modal" id="reportModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modalTitle">Report Lost Item</h3>
+        <button class="close-modal" onclick="closeModal()">&times;</button>
+      </div>
+      <form id="reportForm" onsubmit="submitReport(event)">
+        <input type="hidden" id="itemType" name="itemType" value="lost">
+        <div class="form-group">
+          <label>Title *</label>
+          <input type="text" placeholder="e.g., Blue Samsung Galaxy S22" id="itemTitle" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Category *</label>
+            <select id="itemCategory" required>
+              <option value="">Select category</option>
+              <option value="electronics">Electronics</option>
+              <option value="id">ID</option>
+              <option value="bags">Bags & Luggage</option>
+              <option value="keys">Keys</option>
+              <option value="phones">Phones</option>
+              <option value="wallets">Wallets & Purses</option>
+              <option value="jewelry">Jewelry</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Location *</label>
+            <input type="text" placeholder="e.g., G-block, C14....." id="itemLocation" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Description *</label>
+          <textarea rows="4" placeholder="Provide a description (color, brand, distinctive features...)" id="itemDescription" required></textarea>
+        </div>
+        <div class="form-tip">
+          <i class="fas fa-lightbulb"></i>
+          <span>Tip: if you lost this item, leave out one identifying detail (a mark, an engraving, what's inside a pocket).</span>
+        </div>
+        <div class="form-group">
+          <label>Contact Email *</label>
+          <input type="email" placeholder="your@email.com" id="itemEmail" required>
+        </div>
+        <div class="form-group">
+          <label>Photo (optional)</label>
+          <div class="file-upload" onclick="document.getElementById('itemImage').click()">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <p id="itemUploadText">Click to upload or drag and drop</p>
+            <small style="color:var(--gray)">JPG or PNG, up to 5MB — consider cropping out one unique detail</small>
+            <input type="file" id="itemImage" accept="image/png,image/jpeg" style="display:none">
+          </div>
+          <div class="image-preview-card" id="itemImagePreviewWrap" style="display:none">
+            <img id="itemImagePreview" alt="Selected photo preview">
+            <button type="button" class="remove-image-btn" onclick="clearItemImage()">
+              <i class="fas fa-times"></i> Remove photo
+            </button>
+          </div>
+        </div>
+        <button type="submit" class="submit-btn">
+          <i class="fas fa-paper-plane"></i>
+          <span id="submitBtnText">Report Lost Item</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ITEM DETAIL MODAL -->
+  <div class="modal detail-modal" id="detailModal">
+    <div class="modal-content">
+      <button class="close-modal" onclick="closeDetailModal()" style="position:absolute;top:16px;right:16px;z-index:10;background:white;border-radius:50%;width:40px;height:40px;font-size:24px">&times;</button>
+      <div class="detail-image" id="detailImage">
+        <i class="fas fa-image"></i>
+      </div>
+      <div class="detail-body">
+        <span class="card-badge" id="detailBadge" style="position:static;margin-bottom:12px;display:inline-block">Lost</span>
+        <h2 id="detailTitle">Item Title</h2>
+        <div class="detail-meta">
+          <span><i class="fas fa-tag"></i> <span id="detailCategory">Category</span></span>
+          <span><i class="fas fa-map-marker-alt"></i> <span id="detailLocation">Location</span></span>
+          <span><i class="fas fa-calendar"></i> <span id="detailDate">Date</span></span>
+        </div>
+        <p id="detailDescription">Item description goes here.</p>
+        <div class="detail-actions">
+          <a href="#" id="detailContactBtn" class="btn btn-primary" style="flex:1;justify-content:center">
+            <i class="fas fa-envelope"></i> <span id="detailContactEmail">Contact</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EDIT LINK SUCCESS MODAL -->
+  <div class="modal" id="editLinkModal">
+    <div class="modal-content" style="max-width:460px">
+      <div class="modal-header">
+        <h3><i class="fas fa-circle-check" style="color:#10b981;margin-right:8px"></i>Report Submitted!</h3>
+        <button class="close-modal" onclick="closeEditLinkModal()">&times;</button>
+      </div>
+      <div style="padding:0 0 8px">
+        <p style="color:var(--gray);margin-bottom:16px">
+          Save this private link — it's the only way to edit, resolve, or delete this report later. Nobody else can use it.
+        </p>
+        <div class="form-group">
+          <label>Your edit link</label>
+          <div style="display:flex;gap:8px">
+            <input type="text" id="editLinkInput" readonly style="flex:1" onclick="this.select()">
+            <button type="button" class="btn btn-outline" onclick="copyEditLink()" style="white-space:nowrap">
+              <i class="fas fa-copy"></i> Copy
+            </button>
+          </div>
+        </div>
+        <a id="editLinkEmailBtn" href="#" class="btn btn-outline" style="width:100%;justify-content:center;margin-top:8px">
+          <i class="fas fa-envelope"></i> Email me this link
+        </a>
+        <button type="button" class="submit-btn" style="margin-top:16px" onclick="closeEditLinkModal()">
+          <i class="fas fa-check"></i> Got it
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-col">
+        <a href="#" class="logo" style="margin-bottom:20px">
+          <img id="foundly-logo-top" src="foundly-logo-2(preview).png" alt="Foundly illustration" onerror="this.style.display='none'">
+          <span>Foundly</span>
+        </a>
+        <p>Making the world a little smaller by reuniting people with what they've lost.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Quick Links</h4>
+        <ul class="footer-links">
+          <li><a href="#items-section">Browse Items</a></li>
+          <li><a href="#how-it-works">How it Works</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Support</h4>
+        <ul class="footer-links">
+          <li><a href="#faq">FAQ</a></li>
+          <li><a href="#safety">Safety Tips</a></li>
+          <li><a href="#contact">Contact Us</a></li>
+          <li><a href="#privacy">Privacy Policy</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <ul class="footer-links">
+          <li><span><i class="fas fa-envelope" style="margin-right:8px"></i>hello@foundly.app</span></li>
+          <li><span><i class="fas fa-phone" style="margin-right:8px"></i>+233 24 529 4652</span></li>
+          <li><span><i class="fas fa-map-marker-alt" style="margin-right:8px"></i>Tesano, GA</span></li>
+        </ul>
+      </div>
+    </div>
+    <!-- <div class="footer-bottom">
+      <p>&copy; 2026 Foundly. Made with <i class="fas fa-heart" style="color:var(--danger)"></i> for the community.</p>
+    </div> -->
+  </footer>
+</div>
+
+<script type="module" src="js/home.js"></script>
+</body>
+</html>

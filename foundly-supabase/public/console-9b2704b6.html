@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Foundly · Admin Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="foundly.css">
+  <style>
+    /* Admin-page accent overrides */
+    .search-btn { background: #212529; }
+    .search-btn:hover { background: #000; }
+    .pill.active { background: #212529; border-color: #212529; }
+    .submit-btn  { background: #212529; }
+    .submit-btn:hover { background: #000; }
+    .page-hero.admin-hero { background: linear-gradient(105deg, #212529 0%, #495057 100%); }
+    body { background-color: #f5f7fb; }
+
+    /* ---------- LOGIN GATE ---------- */
+    .password-gate {
+      position: fixed; inset: 0;
+      background: linear-gradient(135deg, #212529 0%, #343a40 100%);
+      z-index: 3000; display: flex; align-items: center; justify-content: center; padding: 24px;
+    }
+    .password-gate-card {
+      background: white; border-radius: var(--radius-lg); padding: 48px 40px;
+      max-width: 400px; width: 100%; text-align: center; box-shadow: var(--shadow-lg);
+    }
+    .password-gate-icon {
+      width: 72px; height: 72px; border-radius: 50%;
+      background: rgba(33,37,41,0.08); color: #212529;
+      display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 20px;
+    }
+    .password-gate-card h2 { font-size: 24px; font-weight: 800; margin-bottom: 4px; }
+    .password-gate-card .gate-sub { color: #6c757d; margin: 8px 0 24px; font-size: 14px; }
+    .password-gate-card .form-group { text-align: left; }
+    .gate-back-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 20px; font-size: 13px; color: var(--gray); text-decoration: none; }
+    .gate-back-link:hover { color: var(--primary); }
+
+    /* ---------- STATS ---------- */
+    .admin-stats-banner { grid-template-columns: repeat(6, 1fr); }
+    .stat-card-icon.green  { background: rgba(16,185,129,0.1); color: #10b981; }
+    .stat-card-icon.orange { background: rgba(248,150,30,0.12); color: var(--warning); }
+    .stat-card.clickable { cursor: pointer; }
+
+    /* ---------- TABLE ---------- */
+    .admin-table-wrapper { background: white; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); overflow-x: auto; margin-bottom: 48px; }
+    .admin-table { width: 100%; border-collapse: collapse; min-width: 800px; }
+    .admin-table th {
+      text-align: left; padding: 16px 20px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;
+      color: var(--gray); border-bottom: 2px solid #f1f3f5; background: #f8f9fb; white-space: nowrap;
+    }
+    .admin-table td { padding: 12px 20px; border-bottom: 1px solid #f1f3f5; font-size: 14px; vertical-align: middle; }
+    .admin-table tr:last-child td { border-bottom: none; }
+    .admin-table tbody tr:hover td { background: #f8f9fb; }
+
+    .admin-thumb { width: 44px; height: 44px; border-radius: 10px; overflow: hidden; background: #f1f3f5; display: flex; align-items: center; justify-content: center; color: var(--gray); font-size: 16px; }
+    .admin-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .admin-item-title { font-weight: 700; color: var(--dark); margin-bottom: 2px; max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .admin-item-sub { font-size: 12px; color: var(--gray); }
+
+    .status-pill { padding: 4px 12px; border-radius: 40px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
+    .status-pill.status-active   { background: rgba(16,185,129,0.12); color: #10b981; }
+    .status-pill.status-resolved { background: rgba(0,7,255,0.12); color: var(--primary); }
+    .status-pill.status-deleted  { background: rgba(249,65,68,0.12); color: var(--danger); }
+
+    .admin-actions { white-space: nowrap; position: relative; }
+    .dropdown { position: relative; display: inline-block; }
+    .dropdown-toggle {
+      width: 36px; height: 32px; border-radius: 8px; border: 1px solid #e9ecef; background: white; color: var(--dark);
+      display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--transition);
+      font-size: 14px;
+    }
+    .dropdown-toggle:hover { background: #f1f3f5; border-color: #ced4da; }
+    .dropdown-menu {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: calc(100% + 4px);
+      background: white;
+      border-radius: 10px;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid #f1f3f5;
+      min-width: 160px;
+      overflow: hidden;
+      z-index: 50;
+    }
+    .dropdown-menu.open { display: block; }
+    .dropdown-menu button {
+      display: flex; align-items: center; gap: 10px;
+      width: 100%; padding: 10px 14px; border: none; background: none;
+      text-align: left; font-size: 13px; font-weight: 600; color: var(--dark);
+      cursor: pointer; transition: background 0.15s;
+    }
+    .dropdown-menu button:hover { background: #f8f9fb; }
+    .dropdown-menu button i { width: 16px; color: var(--gray); }
+    .dropdown-menu button.danger-item { color: var(--danger); }
+    .dropdown-menu button.danger-item i { color: var(--danger); }
+    .dropdown-menu button.success-item { color: #10b981; }
+    .dropdown-menu button.success-item i { color: #10b981; }
+    .dropdown-menu hr { border: none; border-top: 1px solid #f1f3f5; margin: 4px 0; }
+
+    .icon-btn {
+      width: 32px; height: 32px; border-radius: 50%; border: 1px solid #e9ecef; background: white; color: var(--gray);
+      display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--transition);
+      font-size: 12px; margin-right: 6px;
+    }
+    .icon-btn:hover { background: var(--primary); color: white; border-color: var(--primary); }
+    .icon-btn.danger:hover  { background: var(--danger);  color: white; border-color: var(--danger); }
+    .icon-btn.warning:hover { background: var(--warning); color: white; border-color: var(--warning); }
+    .icon-btn.success:hover { background: #10b981; color: white; border-color: #10b981; }
+
+    .sort-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+    .result-count { font-size: 14px; color: #6c757d; }
+    .result-count strong { color: var(--dark); }
+
+    @media (max-width: 1200px) { .admin-stats-banner { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 576px)  { .admin-stats-banner { grid-template-columns: repeat(2, 1fr); } }
+  </style>
+</head>
+<body data-page="admin">
+
+<!-- ============ LOGIN GATE ============ -->
+<div class="password-gate" id="loginGate">
+  <div class="password-gate-card">
+    <div class="password-gate-icon"><i class="fas fa-user-shield"></i></div>
+    <h2>Admin Sign In</h2>
+    <p class="gate-sub">Sign in with your admin account to continue.</p>
+    <form id="gateForm" onsubmit="return false">
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="gateEmail" placeholder="admin@foundly.app" autocomplete="username" required>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="gatePassword" placeholder="Password" autocomplete="current-password" required>
+      </div>
+      <small id="gateError" style="display:none;color:var(--danger);margin-bottom:10px;text-align:left"></small>
+      <button type="submit" class="submit-btn" id="gateSubmitBtn">
+        <i class="fas fa-right-to-bracket"></i> Sign In
+      </button>
+    </form>
+    <a href="index.html" class="gate-back-link"><i class="fas fa-arrow-left"></i> Back to site</a>
+  </div>
+</div>
+
+<!-- ============ NOT AUTHORIZED ============ -->
+<div class="password-gate" id="notAdminGate" style="display:none">
+  <div class="password-gate-card">
+    <div class="password-gate-icon" style="background:rgba(249,65,68,0.1);color:var(--danger)"><i class="fas fa-ban"></i></div>
+    <h2>Not authorized</h2>
+    <p class="gate-sub">This account doesn't have admin access. Ask an existing admin to grant it, or sign in with a different account.</p>
+    <button class="submit-btn" onclick="handleSignOutAndReload()"><i class="fas fa-rotate-left"></i> Try a different account</button>
+  </div>
+</div>
+
+<!-- ============ ADMIN CONTENT ============ -->
+<div id="adminContent" style="display:none">
+<div class="container">
+
+  <!-- NAVIGATION -->
+  <nav class="navbar">
+    <a href="index.html" class="logo">
+        <img id="foundly-logo-top" src="GCTU-Logo-640x640.webp" alt="Foundly illustration" onerror="this.style.display='none'">
+        <img id="foundly-logo-top" src="foundly-logo-2(preview).png" alt="Foundly illustration" onerror="this.style.display='none'">
+      <span>GCTU Foundly</span>
+    </a>
+    <div class="nav-links">
+      <span style="font-weight:700;color:var(--gray);font-size:13px;text-transform:uppercase;letter-spacing:1.5px">
+        <i class="fas fa-gauge-high"></i> Admin Panel
+      </span>
+    </div>
+    <div class="nav-buttons">
+      <span id="adminEmailLabel" style="font-size:13px;color:var(--gray);margin-right:8px"></span>
+      <a href="index.html" class="btn btn-outline">
+        <i class="fas fa-arrow-left"></i> View Site
+      </a>
+      <button class="btn" style="background:var(--danger);color:white;border:none;box-shadow:0 8px 16px rgba(249,65,68,0.2)" onclick="handleSignOut()">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </button>
+    </div>
+  </nav>
+
+  <!-- PAGE HERO -->
+  <section class="page-hero admin-hero">
+    <div class="page-hero-content">
+      <h1><i class="fas fa-gauge-high" style="margin-right:12px;opacity:0.9"></i>Admin Dashboard</h1>
+      <p>Review, edit, resolve, or remove any lost &amp; found report on Foundly.</p>
+    </div>
+  </section>
+
+  <div style="background:white;border-radius:var(--radius-md);box-shadow:var(--shadow-sm);padding:20px 24px;margin-bottom:32px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+    <i class="fas fa-diagram-project" style="font-size:22px;color:var(--primary)"></i>
+    <div style="flex:1;min-width:260px">
+      <strong>Workflow:</strong> Lost item reported (visible here only) →
+      Someone reports a matching Found item (visible on the public site) →
+      You compare the two and confirm a match →
+      Click the matching item's <strong>⋮ menu → Mark Resolved</strong> →
+      the owner is automatically emailed at the address they gave when reporting.
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-banner admin-stats-banner">
+    <div class="stat-card clickable" onclick="filterFromStatCard('all','all')">
+      <div class="stat-card-icon blue"><i class="fas fa-layer-group"></i></div>
+      <div><div class="stat-card-value" id="statTotal">0</div><div class="stat-card-label">Total Items</div></div>
+    </div>
+    <div class="stat-card clickable" onclick="filterFromStatCard('active','all')">
+      <div class="stat-card-icon green"><i class="fas fa-circle-check"></i></div>
+      <div><div class="stat-card-value" id="statActiveCount">0</div><div class="stat-card-label">Active Items</div></div>
+    </div>
+    <div class="stat-card clickable" onclick="filterFromStatCard('all','found')">
+      <div class="stat-card-icon purple"><i class="fas fa-hand-holding-heart"></i></div>
+      <div><div class="stat-card-value" id="statFoundCount">0</div><div class="stat-card-label">Found Items</div></div>
+    </div>
+    <div class="stat-card clickable" onclick="filterFromStatCard('resolved','all')">
+      <div class="stat-card-icon blue"><i class="fas fa-handshake"></i></div>
+      <div><div class="stat-card-value" id="statResolvedCount">0</div><div class="stat-card-label">Resolved Items</div></div>
+    </div>
+    <div class="stat-card clickable" onclick="filterFromStatCard('deleted','all')">
+      <div class="stat-card-icon red"><i class="fas fa-trash"></i></div>
+      <div><div class="stat-card-value" id="statDeletedCount">0</div><div class="stat-card-label">Deleted Items</div></div>
+    </div>
+  </div>
+
+  <!-- TOOLBAR -->
+  <div class="section-header">
+    <h2>Manage Items</h2>
+    <button class="btn btn-primary" style="background:#212529;box-shadow:0 8px 16px rgba(33,37,41,0.2)" onclick="openItemModal('create')">
+      <i class="fas fa-plus"></i> Add New Item
+    </button>
+  </div>
+
+  <!-- STATUS TABS -->
+  <div class="category-pills" id="statusTabs">
+    <div class="pill active" data-tab="all" onclick="setTab('all', this)"><i class="fas fa-border-all"></i> All</div>
+    <div class="pill" data-tab="active" onclick="setTab('active', this)"><i class="fas fa-circle-check"></i> Active</div>
+    <div class="pill" data-tab="resolved" onclick="setTab('resolved', this)"><i class="fas fa-handshake"></i> Resolved</div>
+    <div class="pill" data-tab="deleted" onclick="setTab('deleted', this)"><i class="fas fa-trash"></i> Deleted</div>
+  </div>
+
+  <div class="search-section">
+    <div class="search-input">
+      <i class="fas fa-search"></i>
+      <input type="text" placeholder="Search items..." id="adminSearchInput">
+    </div>
+    <div class="filter-dropdown">
+      <label for="adminTypeFilter">Type:</label>
+      <select id="adminTypeFilter" onchange="applyAdminFilters()">
+        <option value="all">All</option>
+        <option value="lost">Lost</option>
+        <option value="found">Found</option>
+      </select>
+    </div>
+    <div class="filter-dropdown">
+      <label for="adminCategoryFilter">Category:</label>
+      <select id="adminCategoryFilter" onchange="applyAdminFilters()">
+        <option value="">All</option>
+        <option value="electronics">Electronics</option>
+        <option value="id">ID</option>
+        <option value="bags">Bags & Luggage</option>
+        <option value="keys">Keys</option>
+        <option value="phones">Phones</option>
+        <option value="wallets">Wallets & Purses</option>
+        <option value="jewelry">Jewelry</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+    <button class="search-btn" onclick="applyAdminFilters()">
+      <i class="fas fa-filter"></i> Search
+    </button>
+  </div>
+
+  <div class="sort-bar">
+    <p class="result-count">Showing <strong id="adminResultCount">—</strong> items</p>
+    <button class="btn btn-outline" onclick="reloadAdminData()"><i class="fas fa-rotate"></i> Refresh</button>
+  </div>
+
+  <!-- TABLE -->
+  <div class="admin-table-wrapper">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th></th><th>Item</th><th>Type</th><th>Category</th><th>Reported</th><th>Status</th><th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="adminTableBody">
+        <tr><td colspan="7" style="text-align:center;padding:48px;color:var(--gray)">
+          <i class="fas fa-spinner fa-spin" style="font-size:24px;display:block;margin-bottom:12px"></i>Loading reports…
+        </td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ITEM PREVIEW MODAL -->
+  <div class="modal detail-modal" id="adminPreviewModal">
+    <div class="modal-content">
+      <button class="close-modal" onclick="closePreviewModal()" style="position:absolute;top:16px;right:16px;z-index:10;background:white;border-radius:50%;width:40px;height:40px;font-size:24px">&times;</button>
+      <div class="detail-image" id="previewImage">
+        <i class="fas fa-image"></i>
+      </div>
+      <div class="detail-body">
+        <span class="card-badge" id="previewBadge" style="position:static;margin-bottom:12px;display:inline-block">Lost</span>
+        <span class="status-pill" id="previewStatusPill" style="margin-left:8px">Active</span>
+        <h2 id="previewTitle" style="margin-top:12px">Item Title</h2>
+        <div class="detail-meta">
+          <span><i class="fas fa-tag"></i> <span id="previewCategory">Category</span></span>
+          <span><i class="fas fa-map-marker-alt"></i> <span id="previewLocation">Location</span></span>
+          <span><i class="fas fa-calendar"></i> <span id="previewDate">Date</span></span>
+        </div>
+        <p id="previewDescription">Item description goes here.</p>
+        <div class="detail-actions">
+          <a href="#" id="previewContactBtn" class="btn btn-primary" style="flex:1;justify-content:center">
+            <i class="fas fa-envelope"></i> <span id="previewContactEmail">Contact</span>
+          </a>
+          <button class="btn btn-outline" onclick="closePreviewModal(); openItemModal('edit', currentPreviewId)" style="flex:1;justify-content:center">
+            <i class="fas fa-pen"></i> Edit
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD / EDIT ITEM MODAL -->
+  <div class="modal" id="adminItemModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="adminModalTitle">Add New Item</h3>
+        <button class="close-modal" onclick="closeItemModal()">&times;</button>
+      </div>
+      <form id="adminItemForm" onsubmit="submitItemForm(event)">
+        <input type="hidden" id="adminItemId">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Type *</label>
+            <select id="adminItemType" required>
+              <option value="lost">Lost</option>
+              <option value="found">Found</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Status *</label>
+            <select id="adminItemStatus" required>
+              <option value="active">Active</option>
+              <option value="resolved">Resolved</option>
+              <option value="deleted">Deleted</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Title *</label>
+          <input type="text" placeholder="e.g., Blue Samsung Galaxy S22" id="adminItemTitle" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Category *</label>
+            <select id="adminItemCategory" required>
+              <option value="">Select category</option>
+              <option value="electronics">Electronics</option>
+              <option value="id">ID</option>
+              <option value="bags">Bags & Luggage</option>
+              <option value="keys">Keys</option>
+              <option value="phones">Phones</option>
+              <option value="wallets">Wallets & Purses</option>
+              <option value="jewelry">Jewelry</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Location *</label>
+            <input type="text" placeholder="e.g., Central Park, NY" id="adminItemLocation" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Description *</label>
+          <textarea rows="4" placeholder="Provide detailed description..." id="adminItemDescription" required></textarea>
+        </div>
+        <div class="form-group">
+          <label>Contact Email *</label>
+          <input type="email" placeholder="your@email.com" id="adminItemEmail" required>
+        </div>
+        <div class="form-group">
+          <label>Photo (optional)</label>
+          <img id="adminCurrentImagePreview" style="width:100%;max-width:200px;border-radius:var(--radius-sm);margin-bottom:10px;display:none">
+          <div class="file-upload" onclick="document.getElementById('adminItemImage').click()">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <p id="adminFileUploadText">Click to upload or drag and drop</p>
+            <small style="color:var(--gray)">JPG or PNG, up to 5MB</small>
+            <input type="file" id="adminItemImage" accept="image/png,image/jpeg" style="display:none">
+          </div>
+          <button type="button" class="remove-image-btn" id="adminRemoveImageBtn" style="display:none;margin-top:8px" onclick="clearAdminImage()">
+            <i class="fas fa-times"></i> Remove photo
+          </button>
+        </div>
+        <button type="submit" class="submit-btn">
+          <i class="fas fa-save"></i>
+          <span id="adminSubmitBtnText">Add Item</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-col">
+        <a href="index.html" class="logo" style="margin-bottom:20px">
+          <img id="foundly-logo-top" src="GCTU-Logo-640x640.webp" alt="Foundly illustration" onerror="this.style.display='none'">
+          <img id="foundly-logo-top" src="foundly-logo-2(preview).png" alt="Foundly illustration" onerror="this.style.display='none'">
+          </i><span>GCTU Foundly</span>
+        </a>
+        <p>Making the world a little smaller by reuniting people with what they've lost.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Quick Links</h4>
+        <ul class="footer-links">
+          <li><a href="index.html#items-section">Browse Items</a></li>
+          <li><a href="index.html#how-it-works">How it Works</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <ul class="footer-links">
+          <li><span><i class="fas fa-envelope" style="margin-right:8px"></i>hello@foundly.app</span></li>
+        </ul>
+      </div>
+    </div>
+    
+  </footer>
+</div>
+</div>
+
+<script type="module" src="js/admin.js"></script>
+</body>
+</html>

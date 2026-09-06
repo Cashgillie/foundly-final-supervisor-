@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Foundly · Manage Your Report</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="foundly.css">
+  <style>
+    .search-btn { background: #0ea5a4; }
+    .search-btn:hover { background: #0b8483; }
+    .submit-btn  { background: #0ea5a4; }
+    .submit-btn:hover { background: #0b8483; }
+    .page-hero.edit-hero { background: linear-gradient(105deg, #0ea5a4 0%, #14213d 100%); }
+
+    .edit-panel {
+      background: white;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: 32px;
+      max-width: 640px;
+      margin: 0 auto 48px;
+    }
+    .edit-panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+    .edit-panel-header h2 { font-size: 22px; margin: 0; }
+
+    .status-pill { padding: 5px 14px; border-radius: 40px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+    .status-pill.status-active   { background: rgba(16,185,129,0.12); color: #10b981; }
+    .status-pill.status-resolved { background: rgba(0,7,255,0.12); color: var(--primary); }
+    .status-pill.status-deleted  { background: rgba(249,65,68,0.12); color: var(--danger); }
+
+    .edit-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+    .edit-actions .btn { flex: 1; min-width: 160px; justify-content: center; }
+
+    .state-card {
+      max-width: 520px;
+      margin: 40px auto 60px;
+      background: white;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: 48px 32px;
+      text-align: center;
+    }
+    .state-card i { font-size: 40px; color: var(--gray); margin-bottom: 16px; display: block; }
+    .state-card.error i { color: var(--danger); }
+    .state-card.success i { color: #10b981; }
+    .state-card h2 { margin-bottom: 8px; }
+    .state-card p { color: var(--gray); margin-bottom: 20px; }
+
+    .current-image-preview { width: 100%; max-width: 220px; border-radius: var(--radius-sm); margin-bottom: 12px; display: block; }
+  </style>
+</head>
+<body data-page="edit">
+<div class="container">
+
+  <!-- NAVIGATION -->
+  <nav class="navbar">
+    <a href="index.html" class="logo">
+      <i class="fas fa-compass"></i>
+      <span>Foundly</span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html#items-section">Browse Items</a>
+      <a href="index.html#how-it-works">How it Works</a>
+      <a href="index.html#faq">FAQ</a>
+      <a href="index.html#contact">Contact</a>
+    </div>
+    <div class="nav-buttons">
+      <a href="index.html" class="btn btn-outline">
+        <i class="fas fa-home"></i> Home
+      </a>
+    </div>
+  </nav>
+
+  <!-- PAGE HERO -->
+  <section class="page-hero edit-hero">
+    <div class="page-hero-content">
+      <h1><i class="fas fa-pen-to-square" style="margin-right:12px;opacity:0.9"></i>Manage Your Report</h1>
+      <p>Edit, resolve, or remove your report using the private link you were given.</p>
+    </div>
+  </section>
+
+  <!-- LOADING -->
+  <div class="state-card" id="loadingState">
+    <i class="fas fa-spinner fa-spin"></i>
+    <h2>Loading your report…</h2>
+  </div>
+
+  <!-- INVALID LINK -->
+  <div class="state-card error" id="invalidState" style="display:none">
+    <i class="fas fa-triangle-exclamation"></i>
+    <h2>This link isn't valid</h2>
+    <p>Make sure you're using the exact link from your confirmation — it should include both an <code>id</code> and a <code>token</code>.</p>
+    <a href="index.html" class="btn btn-primary"><i class="fas fa-home"></i> Back to Foundly</a>
+  </div>
+
+  <!-- NOT FOUND -->
+  <div class="state-card error" id="notFoundState" style="display:none">
+    <i class="fas fa-box-open"></i>
+    <h2>Report not found</h2>
+    <p>This report may have been permanently removed.</p>
+    <a href="index.html" class="btn btn-primary"><i class="fas fa-home"></i> Back to Foundly</a>
+  </div>
+
+  <!-- EDIT PANEL -->
+  <div class="edit-panel" id="editPanel" style="display:none">
+    <div class="edit-panel-header">
+      <h2>Edit Report</h2>
+      <span class="status-pill" id="statusPill">Active</span>
+    </div>
+
+    <div id="deletedNotice" style="display:none;background:rgba(249,65,68,0.08);color:var(--danger);padding:14px 16px;border-radius:var(--radius-sm);margin-bottom:20px;font-size:14px">
+      <i class="fas fa-circle-info"></i> This report has been deleted and is no longer visible to the public. Editing is disabled — contact support if you need it restored.
+    </div>
+
+    <form id="editForm">
+      <div class="form-group">
+        <label>Type *</label>
+        <select id="editType" required>
+          <option value="lost">Lost</option>
+          <!-- <option value="found">Found</option> -->
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Title *</label>
+        <input type="text" id="editTitle" required>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Category *</label>
+          <select id="editCategory" required>
+            <option value="electronics">Electronics</option>
+            <option value="id">ID</option>
+            <option value="bags">Bags & Luggage</option>
+            <option value="keys">Keys</option>
+            <option value="phones">Phones</option>
+            <option value="wallets">Wallets & Purses</option>
+            <option value="jewelry">Jewelry</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Location *</label>
+          <input type="text" id="editLocation" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Description *</label>
+        <textarea rows="4" id="editDescription" required></textarea>
+      </div>
+      <div class="form-group">
+        <label>Contact Email *</label>
+        <input type="email" id="editContact" required>
+      </div>
+      <div class="form-group">
+        <label>Photo</label>
+        <img id="currentImagePreview" class="current-image-preview" style="display:none">
+        <div class="file-upload" onclick="document.getElementById('editImage').click()">
+          <i class="fas fa-cloud-upload-alt"></i>
+          <p id="editUploadText">Click to upload a new photo (optional)</p>
+          <small style="color:var(--gray)">JPG or PNG, up to 5MB</small>
+          <input type="file" id="editImage" accept="image/png,image/jpeg" style="display:none">
+        </div>
+        <button type="button" class="remove-image-btn" id="editRemoveImageBtn" style="display:none;margin-top:8px" onclick="clearEditImage()">
+          <i class="fas fa-times"></i> Remove new photo
+        </button>
+      </div>
+
+      <button type="submit" class="submit-btn" id="saveBtn">
+        <i class="fas fa-save"></i> Save Changes
+      </button>
+
+      <div class="edit-actions">
+        <button type="button" class="btn btn-outline" id="resolveBtn" onclick="handleResolve()">
+          <i class="fas fa-circle-check"></i> Mark as Resolved
+        </button>
+        <button type="button" class="btn" style="background:var(--danger);color:white" id="deleteBtn" onclick="handleDelete()">
+          <i class="fas fa-trash"></i> Delete Report
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-col">
+        <a href="index.html" class="logo" style="margin-bottom:20px">
+          <img id="foundly-logo-top" src="GCTU-Logo-640x640.webp" alt="Foundly illustration" onerror="this.style.display='none'">
+          <img id="foundly-logo-top" src="foundly-logo-2(preview).png" alt="Foundly illustration" onerror="this.style.display='none'">
+          </i><span>GCTU Foundly</span>
+        </a>
+        <p>Making the world a little smaller by reuniting people with what they've lost.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Quick Links</h4>
+        <ul class="footer-links">
+          <li><a href="index.html#items-section">Browse Items</a></li>
+          <li><a href="index.html#how-it-works">How it Works</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <ul class="footer-links">
+          <li><span><i class="fas fa-envelope" style="margin-right:8px"></i>hello@foundly.app</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 Foundly. Made with <i class="fas fa-heart" style="color:var(--danger)"></i> for the community.</p>
+    </div>
+  </footer>
+</div>
+
+<script type="module" src="js/edit.js"></script>
+</body>
+</html>
