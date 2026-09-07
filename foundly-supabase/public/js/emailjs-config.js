@@ -16,10 +16,9 @@
    4. Account > General > copy your Public Key
    5. Paste all three values below
 
-   If left as placeholders, notification emails are silently skipped
-   (a console warning is logged) — everything else keeps working.
+   
    ============================================================ */
 
-export const EMAILJS_SERVICE_ID = "service_1a9r0jm";
+export const EMAILJS_SERVICE_ID = "service_fdwnpcs";
 export const EMAILJS_TEMPLATE_ID = "template_1bdw16b";
 export const EMAILJS_PUBLIC_KEY = "GGsoD7lxOOzLXdB5c";
