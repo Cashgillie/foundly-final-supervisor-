@@ -22,3 +22,6 @@
 export const EMAILJS_SERVICE_ID = "service_fdwnpcs";
 export const EMAILJS_TEMPLATE_ID = "template_1bdw16b";
 export const EMAILJS_PUBLIC_KEY = "GGsoD7lxOOzLXdB5c";
+
+
+export const EMAILJS_LOST_REPORT_TEMPLATE_ID = "template_t7f8jnf";

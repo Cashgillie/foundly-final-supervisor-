@@ -9,7 +9,8 @@
    ============================================================ */
 
 import { supabase } from "./supabase-init.js";
-import { EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, EMAILJS_PUBLIC_KEY } from "./emailjs-config.js";
+// import { EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, EMAILJS_PUBLIC_KEY } from "./emailjs-config.js";
+  import { EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, EMAILJS_PUBLIC_KEY, EMAILJS_LOST_REPORT_TEMPLATE_ID } from "./emailjs-config.js";
 
 const BUCKET = "report-images";
 
@@ -274,6 +275,34 @@ export async function sendResolutionNotification(item) {
     return { sent: true };
   } catch (err) {
     console.error('Failed to send resolution notification email:', err);
+    return { sent: false, reason: err?.message || 'unknown_error' };
+  }
+  
+}
+
+
+
+export async function sendLostReportNotification(item) {
+  if (!isEmailjsConfigured()) {
+    console.warn('EmailJS is not configured — skipping lost-report notification email.');
+    return { sent: false, reason: 'not_configured' };
+  }
+  try {
+    const { default: emailjs } = await import("https://esm.sh/@emailjs/browser@4");
+    if (!emailjsInitialized) {
+      emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+      emailjsInitialized = true;
+    }
+    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_LOST_REPORT_TEMPLATE_ID, {
+      to_email: item.contact,
+      item_title: item.title,
+      item_type: item.type,
+      item_category: item.category,
+      item_location: item.location
+    });
+    return { sent: true };
+  } catch (err) {
+    console.error('Failed to send lost-report notification email:', err);
     return { sent: false, reason: err?.message || 'unknown_error' };
   }
 }

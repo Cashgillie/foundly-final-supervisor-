@@ -2,7 +2,7 @@ import {
   fetchActiveReports, filterAndSort, renderItems, showToast,
   openReportModal, closeModal as closeReportModalBase, openDetailModal, closeDetailModal,
   openEditLinkModal, closeEditLinkModal, submitReportForm,
-  validateImageFile, readImageAsDataURL, escapeHtml
+  validateImageFile, readImageAsDataURL, escapeHtml, sendLostReportNotification
 } from './foundly-data.js';
 
 const HOME_PREVIEW = 6;
@@ -86,7 +86,7 @@ async function submitReport(event) {
     });
 
     closeModal();
-    showToast('✅ Item reported successfully!', 'success');
+    showToast('Item reported successfully!', 'success');
     openEditLinkModal(result.editLink, document.getElementById('itemEmail').value);
     await loadItems();
   } catch (err) {
@@ -96,6 +96,17 @@ async function submitReport(event) {
     submitBtn.disabled = false;
     submitBtn.innerHTML = originalHTML;
   }
+
+if (document.getElementById('itemType').value === 'lost') {
+  sendLostReportNotification({
+    contact: document.getElementById('itemEmail').value,
+    title: document.getElementById('itemTitle').value,
+    type: 'lost',
+    category: document.getElementById('itemCategory').value,
+    location: document.getElementById('itemLocation').value
+  });
+}
+
 }
 
 // ── Photo select / preview / validate ─────────────────────────
